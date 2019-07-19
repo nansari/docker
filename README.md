@@ -1,8 +1,8 @@
 # docker
-How to build a simple web containe, test it and push it on hub.docker.com
+How to build a simple web container, test it and push it on hub.docker.com
 
 ## install
-Install docker package on Linux and Docker Desktop on Windos
+Install docker package on Linux and Docker Desktop on Windows
 
 ## Build a web a container
 Let's get a centos latest official container, install Apache httpd inside, crease a web server index.html to show some text in blue color.
@@ -23,7 +23,7 @@ RUN yum -y install httpd net-tools && \
 # Create index.html for default web server
 RUN echo '<html><h1 style="color:blue;">xxxxxBlue Docker Containerized Web Server</h1></html>' > /var/www/html/index.html
 
-# Tiis container will expose itself of port 80
+# This container will expose itself of port 80
 EXPOSE 80
 
 ENTRYPOINT [ "/usr/sbin/httpd" ]
@@ -90,29 +90,36 @@ CONTAINER ID        IMAGE                       COMMAND                  CREATED
 
 Access you web container on http://<docker_host_ip>:8090  (something line http://192.168.0.100:8090/)
 
-See what is running inside contaer and finally stop it.
+See what is running inside a container, and finally stop it.
 
 ```
+$ docker exec -it determined_stallman /bin/bash
+[root@80317422f257 /]# ps -aef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+apache       6     1  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+apache       7     1  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+apache       8     1  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+apache       9     1  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+apache      10     1  0 17:07 ?        00:00:00 /usr/sbin/httpd -D FOREGROUND
+root        26     0  0 17:09 pts/0    00:00:00 /bin/bash
+root        40    26  0 17:09 pts/0    00:00:00 ps -aef
+[root@80317422f257 /]# ^d
+$ docker stop determined_stallman
 ```
 
+Let's get ready to push it Docker Registry.
+- Tag it with full URL and version number
+- login on http://hub.docker.com
+- push it
 
-
-
-docker tag d3be43b6c140 docker.io/nansari/centos-httpd:v1.0
-
-
-
-
+```
+$ doker tag d3be43b6c140 docker.io/nansari/centos-httpd:v1.0
 
 $ docker login
 Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
 Username: nansari
 Password: 
-
-WARNING! Your password will be stored unencrypted in /home/nansari/.docker/config.json.
-Configure a credential helper to remove this warning. See
-https://docs.docker.com/engine/reference/commandline/login/#credentials-store
-
 Login Succeeded
 
 $ docker push docker.io/nansari/centos-httpd:v1.0
@@ -122,7 +129,13 @@ The push refers to repository [docker.io/nansari/centos-httpd]
 b2a0881e9f7c: Pushed 
 d69483a6face: Mounted from library/centos 
 v1.0: digest: sha256:38cacfbbfc1889e1a53cc6cb40b76067140c9198f4e725af2593a81dac6ac127 size: 1155
+```
 
+Verify if the new image is uploaded https://hub.docker.com/r/nansari/centos-httpd
 
-https://hub.docker.com/r/nansari/centos-httpd
+Test if you are able to newly upload image.
+```
+$ docker pull nansari/centos-httpd:v1.0
+```
 
+Now, run it!
